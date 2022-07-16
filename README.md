@@ -1,2 +1,2 @@
 # sYDP
-I create programm for download video and audio in web.
+I create program for download video and audio in web.
