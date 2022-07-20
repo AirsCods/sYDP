@@ -1,5 +1,4 @@
-from pytube import YouTube
-from pytube import Playlist
+from pytube import YouTube, Playlist
 
 
 def download_playlist(url: str, type_to_load: str) -> None:
@@ -33,3 +32,7 @@ def downloader(url: str, type_to_load: str) -> None:
 
 if __name__ == '__main__':
     print('ON')
+    pytube_obj = YouTube(url='https://www.youtube.com/watch?v=oc8ao-lrViQ')
+    lst = pytube_obj.streams.filter(type='audio')
+    for item in lst:
+        print(item['fps'])
