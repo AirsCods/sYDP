@@ -26,6 +26,8 @@ class MainWindow(QDialog):
 
     def __init__(self):
         super().__init__()
+        self.video_resolution = set()
+        self.audio_abr = set()
         self.init_ui()
 
     def init_ui(self):
@@ -40,7 +42,6 @@ class MainWindow(QDialog):
                            "{border-radius: 4.8px;"
                            "background-color: qlineargradient(spread:pad, x1:0, y1:0.625, x2:0.985, y2:0.006,"
                            "stop:0 rgba(28, 50, 50, 255), stop:1 rgba(0, 0, 0, 249));}")
-
         # Input text url window
         self.w_url_input = QLineEdit('Input url...', self)
         self.w_url_input.setGeometry(QtCore.QRect(10, 50, 320, 40))
@@ -49,7 +50,13 @@ class MainWindow(QDialog):
                                        "border-radius: 4.8px;"
                                        "color: white;"
                                        "background-color: rgba(2, 220, 255, 20);}")
-        self.w_url_input.textChanged.connect(self.evt_input_url)
+        # Button for check url
+        self.btn_check_url = QPushButton('Check url', self)
+        self.btn_check_url.setGeometry(QtCore.QRect(10, 160, 100, 25))
+        self.btn_check_url.setStyleSheet(
+            "QPushButton{border-radius: 4.8px; border-color: rgb(160, 208, 250); color: white; background-color: rgba(2, 220, 255, 10);}\n"
+            "QPushButton:hover{background-color: rgb(40, 57, 65); color: white;}\n"
+            "QPushButton:pressed{background-color: #444444; color: white;}")
         # Text edit window
         self.w_text_edit = QPlainTextEdit(self)
         self.w_text_edit.setGeometry(QtCore.QRect(10, 100, 320, 50))
@@ -58,50 +65,40 @@ class MainWindow(QDialog):
                                        "border-color: rgb(160, 208, 250);"
                                        "color: white;"
                                        "background-color: rgba(2, 220, 255, 20);}")
-
         # Button for choice type file
+        type_list = ['Video', 'Audio']
         self.bnt_type_file = QComboBox(self)
-        self.bnt_type_file.setGeometry(QtCore.QRect(10, 230, 71, 25))
+        self.bnt_type_file.setGeometry(QtCore.QRect(120, 160, 71, 25))
         self.bnt_type_file.setMaxVisibleItems(2)
         self.bnt_type_file.setDisabled(False)
         self.bnt_type_file.setStyleSheet(
             "QComboBox{border-color: rgb(160, 208, 250); color: white; background-color: rgba(7, 38, 46, 125);}\n"
             "QComboBox:hover{background-color: rgb(40, 57, 65); color: white;}\n"
             "QComboBox:pressed{background-color: rgba(7, 38, 46, 125); color: blue;}")
-        self.bnt_type_file.addItem('Video')
-        self.bnt_type_file.addItem('Audio')
-        self.bnt_type_file.activated.connect(self.evt_choice_type)
-
+        self.bnt_type_file.addItems(type_list)
         # Button for choice resolution
         self.btn_resolution = QComboBox(self)
-        self.btn_resolution.setGeometry(QtCore.QRect(90, 230, 85, 25))
+        self.btn_resolution.setGeometry(QtCore.QRect(200, 160, 71, 25))
         self.btn_resolution.setMaxVisibleItems(6)
         self.btn_resolution.setStyleSheet(
             "QComboBox{border-color: rgb(160, 208, 250); color: white; background-color: rgba(7, 38, 46, 125);}\n"
             "QComboBox:hover{background-color: rgb(40, 57, 65); color: white;}\n"
             "QComboBox:pressed{background-color: #444444; color: white;}")
-        self.btn_resolution.addItem('')
-        self.btn_resolution.addItem('')
-
         # Button for choice folder
         self.btn_folder = QPushButton('Folder', self)
-        self.btn_folder.setGeometry(QtCore.QRect(180, 230, 131, 25))
+        self.btn_folder.setGeometry(QtCore.QRect(10, 200, 100, 25))
         self.btn_folder.setStyleSheet(
             "QPushButton{border-radius: 4.8px; border-color: rgb(160, 208, 250); color: white; background-color: rgba(2, 220, 255, 10);}\n"
             "QPushButton:hover{background-color: rgb(40, 57, 65); color: white;}\n"
             "QPushButton:pressed{background-color: #444444; color: white;}")
-        self.btn_folder.clicked.connect(self.get_folder)
-
         # Button for start download
         self.btn_download = QPushButton('Download', self)
-        self.btn_download.setGeometry(QtCore.QRect(180, 280, 131, 25))
+        self.btn_download.setGeometry(QtCore.QRect(10, 280, 100, 25))
         self.btn_download.setStyleSheet(
             "QPushButton{border-radius: 4.8px; border-color: rgb(160, 208, 250); color: white; background-color: rgba(2, 220, 255, 10);}\n"
             "QPushButton:hover{background-color: rgb(40, 57, 65); color: white;}\n"
             "QPushButton:pressed{background-color: #444444; color: white;}")
-        self.btn_download.clicked.connect(self.start)
-
-        # Progress bar for download
+                # Progress bar for download
         self.w_progress_bar = QProgressBar(self)
         self.w_progress_bar.setGeometry(QtCore.QRect(10, 320, 301, 23))
         self.w_progress_bar.setProperty("value", 0)
@@ -111,6 +108,12 @@ class MainWindow(QDialog):
             "QprogressBar::chunk{border-radius: 4.8px; border-color: rgb(160, 208, 250); background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0\n"
             "rgba(201, 87, 149, 255), stop:1 rgba(179, 65, 244, 255));}")
 
+        self.w_url_input.textChanged.connect(self.evt_input_url)
+        self.btn_check_url.clicked.connect(self.check_url)
+        self.bnt_type_file.activated.connect(self.evt_choice_type)
+        self.btn_folder.clicked.connect(self.get_folder)
+        self.btn_download.clicked.connect(self.start)
+
         self.w_text_edit.raise_()
         self.bnt_type_file.raise_()
         self.btn_resolution.raise_()
@@ -118,6 +121,7 @@ class MainWindow(QDialog):
         self.btn_download.raise_()
         self.w_progress_bar.raise_()
         self.w_url_input.raise_()
+        self.btn_check_url.raise_()
 
     def evt_input_url(self):
         url = self.w_url_input.text()
@@ -131,22 +135,32 @@ class MainWindow(QDialog):
             # this is video
             self.w_text_edit.setPlainText('This is video')
 
-            if self.bnt_type_file.currentText() == 'Audio':
-
-
-
         else:
             # wrong url
             self.w_text_edit.setPlainText('This is wrong url address!')
 
     def evt_choice_type(self):
         if self.bnt_type_file.currentText() == 'Video':
-            self.btn_resolution.setItemText(0, '1080p')
-            self.btn_resolution.setItemText(1, '720p')
+            self.btn_resolution.clear()
+            self.btn_resolution.addItems(self.video_resolution)
 
         elif self.bnt_type_file.currentText() == 'Audio':
-            self.btn_resolution.setItemText(0, '160kbts')
-            self.btn_resolution.setItemText(1, '128kbts')
+            self.btn_resolution.clear()
+            self.btn_resolution.addItems(self.audio_abr)
+
+    def check_url(self):
+        self.w_text_edit.setPlainText('Start checking url')
+        stream_audio = YouTube(url=self.w_url_input.text()).streams.filter(type='audio')
+        stream_video = YouTube(url=self.w_url_input.text()).streams.filter(type='video', progressive=True)
+
+        for item in stream_audio:
+            self.audio_abr.add(item.abr)
+
+        for item in stream_video:
+            self.video_resolution.add(item.resolution)
+        print(self.video_resolution)
+        print(self.audio_abr)
+        self.w_text_edit.setPlainText('Close check')
 
     def start(self):
         if len(self.w_url_input.text()) > 5:
@@ -176,12 +190,12 @@ class MainWindow(QDialog):
         for item in btns:
             item.setDisabled(lock_value)
 
+    def progress(self, size):  # Progress bar metod...
+        self.w_progress_bar.setValue(size)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv) # create application
-    # dlgMain = DlgMain() # create main GUI window
-    # dlgMain.show() # show GUI
-    # sys.exit(dlgMain.exec_()) # execute the application
     w_main = MainWindow()
     w_main.show()
     sys.exit(w_main.exec_())

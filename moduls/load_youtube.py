@@ -32,7 +32,7 @@ def downloader(url: str, type_to_load: str) -> None:
 
 if __name__ == '__main__':
     print('ON')
-    pytube_obj = YouTube(url='https://www.youtube.com/watch?v=oc8ao-lrViQ')
-    lst = pytube_obj.streams.filter(type='audio')
-    for item in lst:
-        print(item['fps'])
+    url = 'https://www.youtube.com/watch?v=yhN8qnZozrk&list=PLsjQZqa1OipTA6aB9jUC0oK3PIF7WlTav'
+    yt_object = YouTube(url=url)
+    print(*yt_object.streams, sep='\n')
+    # download_playlist(url=url, type_to_load='audio')
